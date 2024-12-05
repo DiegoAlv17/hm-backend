@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { createAccessToken } from '../libs/jwt.js';
 
 export const register = async (req, res) => {
-    const { adminName, adminEmail, adminPassword, role } = req.body;
+    const { adminName, adminEmail, adminPassword} = req.body;
 
     try {
         // Verificar si el usuario ya existe
@@ -20,14 +20,13 @@ export const register = async (req, res) => {
             adminName,
             adminEmail,
             adminPassword: passHash,
-            role
         });
 
         // Guardar el nuevo usuario en la base de datos
         const authSaved = await newAuth.save();
 
         // Crear un token de acceso
-        const token = await createAccessToken({ id: authSaved._id, role: authSaved.role });
+        const token = await createAccessToken({ id: authSaved._id});
 
         // Enviar la respuesta
         res.json({
@@ -36,7 +35,6 @@ export const register = async (req, res) => {
             id: authSaved._id,
             adminName: authSaved.adminName,
             adminEmail: authSaved.adminEmail,
-            role: authSaved.role,
             createdAt: authSaved.createdAt,
             updatedAt: authSaved.updatedAt
         });
@@ -47,27 +45,23 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const { adminEmail, adminPassword, role } = req.body;
+    const { adminEmail, adminPassword } = req.body;
 
     try {
         const userFound = await Auth.findOne({ adminEmail });
         if (!userFound) return res.status(400).json({ success: false, message: 'User not found' });
 
-        if (userFound.role !== role) {
-            return res.status(403).json({ success: false, message: 'Access denied for this role' });
-        }
 
         const isMatch = await bcrypt.compare(adminPassword, userFound.adminPassword);
         if (!isMatch) return res.status(400).json({ success: false, message: 'Incorrect Password' });
 
-        const token = await createAccessToken({ id: userFound._id, role: userFound.role });
+        const token = await createAccessToken({ id: userFound._id});
         res.json({
             success: true,
             token,
             id: userFound._id,
             adminName: userFound.adminName,
             adminEmail: userFound.adminEmail,
-            role: userFound.role,
             message: 'Login success'
         });
     } catch (error) {
@@ -80,3 +74,16 @@ export const logout = async (req, res) => {
     res.cookie("token", "", { expires: new Date(0) });
     return res.sendStatus(200);
 };
+
+export const profile = async (req, res) =>{
+    const userFound = await Auth.findById(req.user.id)
+
+    if(!userFound) return res.status(404).json({message: 'User not found'});
+
+    return res.json({
+        id: userFound._id,
+        email: userFound.adminEmail,
+        createdAt: userFound.createdAt,
+        updatedAt: userFound.updatedAt
+    })
+}

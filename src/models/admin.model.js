@@ -14,11 +14,6 @@ const adminSchema = new mongoose.Schema({
     adminPassword: {
         type: String,
         required: true,
-    },
-    role: {
-        type: String,
-        enum: ['usuario', 'profesional', 'administrador'],
-        required: true
     }
 })
 
