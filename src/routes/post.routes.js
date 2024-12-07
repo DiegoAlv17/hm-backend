@@ -4,11 +4,11 @@ import { authRequired } from "../middlewares/ValidateToken.js";
 
 const router = Router();
 
-router.post("/posts", authRequired,createPost);
+router.post("/posts",createPost);
 router.get("/posts", getPosts);
 router.get("/posts/:id", getPostById);
-router.put("/posts/:id", authRequired,updatePost);
-router.delete("/posts/:id", authRequired,deletePost);
-router.patch("/posts/:id", authRequired,updatePostPartial);
+router.put("/posts/:id",updatePost);
+router.delete("/posts/:id", deletePost);
+router.patch("/posts/:id",updatePostPartial);
 
 export default router;
