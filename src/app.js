@@ -15,8 +15,8 @@ import geographyChartRoutes from './routes/geographyChart.routes.js';
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173',  // Tu frontend
-    credentials: true,  // Permite el envío de cookies
+    origin: 'https://reliable-valkyrie-2c3c6a.netlify.app/',  // Tu frontend
+    credentials: true  // Permite el envío de cookies
 }));
 app.use(morgan('dev'));
 app.use(express.json());
